@@ -1,6 +1,6 @@
 import os
 from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
@@ -29,10 +29,10 @@ def about():
 @login_required
 def upload():
     # Instantiate your form class
-    
+    uploadForm= UploadForm()
     # Validate file upload on submit
     if request.method == 'GET':
-        uploadForm= UploadForm()
+        
         if request.method == 'POST' and uploadForm.validate_on_submit():
         # Get file data and save to your uploads folder
             upload = uploadForm.upload.data
@@ -75,6 +75,37 @@ def login():
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
+@app.route("/logout")
+@login_required
+def logout():
+    # Logout the user and end the session
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('home'))
+
+@app.route("/uploads/<filename>")
+def get_image(filename):
+    root_dir = os.getcwd()
+
+    return send_from_directory(os.path.join(root_dir, app.config['UPLOAD_FOLDER']), filename)
+
+def get_uploaded_images():
+    uploads = []
+    for cwd, subdirs, files in os.walk(app.config['UPLOAD_FOLDER']):
+        for file in files:
+            uploads.append(file)
+
+    return uploads
+
+@app.route('/files')
+@login_required
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+
+    file_list = get_uploaded_images()
+    return render_template('files.html', uploaded_images = file_list)
+
 @login_manager.user_loader
 def load_user(id):
     return db.session.execute(db.select(UserProfile).filter_by(id=id)).scalar()
