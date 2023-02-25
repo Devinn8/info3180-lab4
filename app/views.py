@@ -68,9 +68,12 @@ def login():
             
             login_user(user)
             flash('You logged in successfully. Welcome!')
+            return redirect(url_for("upload")) 
+        else:
+            flash('Something went wrong try again')
 
         # Remember to flash a message to the user
-        return redirect(url_for("upload"))  # The user should be redirected to the upload form instead
+         # The user should be redirected to the upload form instead
     return render_template("login.html", form=form)
 
 # user_loader callback. This callback is used to reload the user object from
