@@ -25,25 +25,23 @@ def about():
     return render_template('about.html', name="Mary Jane")
 
 
-@app.route('/upload', methods=['POST', 'GET'])
+@app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
     # Instantiate your form class
     #flash("I am here!")
     uploadForm= UploadForm() 
     # Validate file upload on submit
-    if request.method == 'GET':
-               
-        if request.method == 'POST' and uploadForm.validate_on_submit():
+    if request.method == 'POST' and uploadForm.validate_on_submit():
         # Get file data and save to your uploads folder
-            upload = uploadForm.upload.data
-            filename = secure_filename(upload.filename)
-            upload.save(os.path.join(
-                app.config['UPLOAD_FOLDER'],filename
-                ))
-            flash('File Saved', 'success')
+        upload = uploadForm.upload.data
+        filename = secure_filename(upload.filename)
+        upload.save(os.path.join(
+            app.config['UPLOAD_FOLDER'],filename
+            ))
+        flash('File Saved', 'success')
         return render_template('upload.html', uploadForm=uploadForm) # Update this to redirect the user to a route that displays all uploaded image files
-    flash('What is going on?')
+    #flash('What is going on?')
     return render_template('upload.html', uploadForm=uploadForm)
 
 
