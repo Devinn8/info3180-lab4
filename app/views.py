@@ -29,18 +29,21 @@ def about():
 @login_required
 def upload():
     # Instantiate your form class
-    uploadForm= UploadForm()
+    #flash("I am here!")
+    uploadForm= UploadForm() 
     # Validate file upload on submit
     if request.method == 'GET':
-        
+               
         if request.method == 'POST' and uploadForm.validate_on_submit():
         # Get file data and save to your uploads folder
             upload = uploadForm.upload.data
             filename = secure_filename(upload.filename)
-            upload.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            upload.save(os.path.join(
+                app.config['UPLOAD_FOLDER'],filename
+                ))
             flash('File Saved', 'success')
-        return redirect(url_for('home')) # Update this to redirect the user to a route that displays all uploaded image files
-
+        return render_template('upload.html', uploadForm=uploadForm) # Update this to redirect the user to a route that displays all uploaded image files
+    flash('What is going on?')
     return render_template('upload.html', uploadForm=uploadForm)
 
 
@@ -64,13 +67,14 @@ def login():
         # passed to the login_user() method below.
 
         # Gets user id, load into session
-        if user is not None and check_password_hash(user.username, password):
+        app.logger.debug(user)
+        if user is not None and check_password_hash(user.password, password):
             
             login_user(user)
             flash('You logged in successfully. Welcome!')
             return redirect(url_for("upload")) 
         else:
-            flash('Something went wrong try again')
+            flash('Incorrect username or password. Please try again')
 
         # Remember to flash a message to the user
          # The user should be redirected to the upload form instead
