@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block css %} <link rel="stylesheet" href="{{url_for('static', filename= 'css/app.css')}}"/> {% endblock %}
+{% block main %}
+
+<div class="gallery">
+{% for singlepath in filelist %}
+    <img src = {{url_for('get_image', filename=singlepath)}} />
+{% endfor %}
+</div>
+
+{% endblock %}
