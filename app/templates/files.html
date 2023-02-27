@@ -4,7 +4,9 @@
 
 <div class="gallery">
 {% for singlepath in filelist %}
-    <img src = {{url_for('get_image', filename=singlepath)}} />
+    {% if singlepath.split('.')[-1].lower() in ['jpg', 'png'] %}
+        <img src = {{url_for('get_image', filename=singlepath)}} />
+    {% endif %} 
 {% endfor %}
 </div>
 
